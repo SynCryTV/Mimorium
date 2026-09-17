@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1
+
+- Instrumente auf den WoW-Master-Audiokanal umgestellt, damit sie nicht vom SFX-Regler gedämpft werden.
+
 ## 0.3.0
 
 - Piano-Overlay deutlich vergrößert und heller gestaltet.

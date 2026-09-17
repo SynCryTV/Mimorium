@@ -16,8 +16,8 @@ U J K` spielen jeweils die ausgewählte chromatische Oktave; mit den Pfeiltasten
 wechselst du zwischen C3, C4 und C5. Gespielte und empfangene Noten leuchten
 direkt auf der passenden Klaviertaste auf. Im automatisch betretenen Kanal
 `MimoriumMusic` werden die Noten an alle anderen Mimorium-Nutzer synchronisiert
-– ohne Party oder Raid. Die Töne laufen über den SFX-Kanal, also dieselbe
-Lautstärkeregelung wie Zauber- und Skill-Effekte.
+– ohne Party oder Raid. Die Instrumente laufen über den Master-Kanal, damit
+sie nicht vom SFX-Regler gedämpft werden.
 
 ## Installation
 

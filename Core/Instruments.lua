@@ -270,7 +270,7 @@ function Mimorium:ToggleInstrumentFrame()
 end
 
 function Mimorium:PlayInstrumentNote(note, shouldBroadcast)
-    PlaySoundFile(soundPath(note), "SFX")
+    PlaySoundFile(soundPath(note), "Master")
     if shouldBroadcast then
         local channelNumber = self:EnsureMusicChannel()
         if channelNumber and channelNumber > 0 then
