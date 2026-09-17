@@ -266,7 +266,11 @@ function Mimorium:ToggleInstrumentFrame()
 end
 
 function Mimorium:PlayInstrumentNote(note, shouldBroadcast)
-    PlaySoundFile(soundPath(note), "Master")
+    -- WoW has no dedicated addon volume bus. Playing the local sample twice
+    -- raises Mimorium's gain relative to the normal SFX mix, while still
+    -- letting the player control it with the existing SFX slider.
+    PlaySoundFile(soundPath(note), "SFX")
+    PlaySoundFile(soundPath(note), "SFX")
     if shouldBroadcast then
         local channelNumber = self:EnsureMusicChannel()
         if channelNumber and channelNumber > 0 then

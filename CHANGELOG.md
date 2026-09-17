@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3
+
+- Instrumente zurück auf SFX gelegt und nur Mimoriums Noten durch doppelte Wiedergabe deutlich verstärkt.
+
 ## 0.3.2
 
 - Nicht unterstützte Unicode-Zeichen im Piano-Overlay durch WoW-sichere ASCII-Beschriftungen ersetzt.
