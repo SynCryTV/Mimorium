@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+- Piano-Overlay deutlich vergrößert und heller gestaltet.
+- Drei sichtbare Oktaven (C3–C6) inklusive weißer und schwarzer Tasten ergänzt.
+- Gedrückte eigene sowie empfangene Noten leuchten direkt auf der jeweiligen Klaviertaste auf.
+- Pfeiltasten wechseln die über die Tastatur spielbare Oktave.
+- Grundlautstärke der Testtöne deutlich angehoben.
+
 ## 0.2.1
 
 - Gemeinsamen `MimoriumMusic`-Kanal ergänzt: Instrumente funktionieren jetzt ohne Party oder Raid.

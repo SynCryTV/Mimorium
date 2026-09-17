@@ -11,12 +11,13 @@ Nächstes folgen Kategorien, Favoriten und die Emote-Sammlung.
 ## Instrumente (Prototyp)
 
 Über **Kristallharfe spielen** öffnet sich das erste spielbare Instrument.
-Die Tasten `A W S E D F T G Y H U J K` bilden eine chromatische Oktave. In
-dem automatisch betretenen Kanal `MimoriumMusic` werden die Noten an alle
-anderen Mimorium-Nutzer synchronisiert – ohne Party oder Raid. Die Töne laufen
-über den SFX-Kanal, also dieselbe Lautstärkeregelung wie Zauber- und
-Skill-Effekte. Die aktuell enthaltenen Töne sind neutrale Testklänge und werden
-später durch Instrument-Samples ersetzt.
+Das Overlay zeigt drei Oktaven von C3 bis C6. Die Tasten `A W S E D F T G Y H
+U J K` spielen jeweils die ausgewählte chromatische Oktave; mit den Pfeiltasten
+wechselst du zwischen C3, C4 und C5. Gespielte und empfangene Noten leuchten
+direkt auf der passenden Klaviertaste auf. Im automatisch betretenen Kanal
+`MimoriumMusic` werden die Noten an alle anderen Mimorium-Nutzer synchronisiert
+– ohne Party oder Raid. Die Töne laufen über den SFX-Kanal, also dieselbe
+Lautstärkeregelung wie Zauber- und Skill-Effekte.
 
 ## Installation
 

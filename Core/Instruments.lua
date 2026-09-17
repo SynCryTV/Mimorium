@@ -2,64 +2,32 @@ local _, Mimorium = ...
 
 local PREFIX = "Mimorium"
 local MUSIC_CHANNEL = "MimoriumMusic"
-local NOTES = {
-    { key = "A", note = "C4", whiteIndex = 1 },
-    { key = "W", note = "Db4", black = true, whiteIndex = 1 },
-    { key = "S", note = "D4", whiteIndex = 2 },
-    { key = "E", note = "Eb4", black = true, whiteIndex = 2 },
-    { key = "D", note = "E4", whiteIndex = 3 },
-    { key = "F", note = "F4", whiteIndex = 4 },
-    { key = "T", note = "Gb4", black = true, whiteIndex = 4 },
-    { key = "G", note = "G4", whiteIndex = 5 },
-    { key = "Y", note = "Ab4", black = true, whiteIndex = 5 },
-    { key = "H", note = "A4", whiteIndex = 6 },
-    { key = "U", note = "Bb4", black = true, whiteIndex = 6 },
-    { key = "J", note = "B4", whiteIndex = 7 },
-    { key = "K", note = "C5", whiteIndex = 8 },
+local NOTE_NAMES = { "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B" }
+local WHITE_NOTE_INDEX = { C = 1, D = 2, E = 3, F = 4, G = 5, A = 6, B = 7 }
+local KEY_LAYOUT = {
+    A = { name = "C", offset = 0 }, W = { name = "Db", offset = 0 },
+    S = { name = "D", offset = 0 }, E = { name = "Eb", offset = 0 },
+    D = { name = "E", offset = 0 }, F = { name = "F", offset = 0 },
+    T = { name = "Gb", offset = 0 }, G = { name = "G", offset = 0 },
+    Y = { name = "Ab", offset = 0 }, H = { name = "A", offset = 0 },
+    U = { name = "Bb", offset = 0 }, J = { name = "B", offset = 0 },
+    K = { name = "C", offset = 1 },
 }
 
-local NOTE_BY_KEY = {}
-for _, entry in ipairs(NOTES) do
-    NOTE_BY_KEY[entry.key] = entry
+local function makeNote(name, octave)
+    return name .. octave
+end
+
+local function splitNote(note)
+    return note:match("^([A-G][b#]?)(%d)$")
 end
 
 local function soundPath(note)
     return "Interface\\AddOns\\Mimorium\\Sounds\\Harp_" .. note .. ".ogg"
 end
 
-local function createKey(frame, entry, x)
-    local button = CreateFrame("Button", nil, frame, "BackdropTemplate")
-    button:SetSize(entry.black and 40 or 54, entry.black and 112 or 166)
-    button:SetPoint("CENTER", frame, "CENTER", x, entry.black and -18 or -46)
-    button:SetFrameLevel(frame:GetFrameLevel() + (entry.black and 4 or 2))
-    button:SetBackdrop({
-        bgFile = "Interface\\Buttons\\WHITE8x8",
-        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        edgeSize = 10,
-        insets = { left = 2, right = 2, top = 2, bottom = 2 },
-    })
-    button:SetBackdropColor(entry.black and 0.05 or 0.16, entry.black and 0.04 or 0.11, entry.black and 0.09 or 0.20, 1)
-    button:SetBackdropBorderColor(0.78, 0.61, 0.22, 1)
-
-    local keyText = button:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    keyText:SetPoint("BOTTOM", 0, 28)
-    keyText:SetText(entry.key)
-    keyText:SetTextColor(0.95, 0.84, 0.48)
-
-    local noteText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    noteText:SetPoint("BOTTOM", 0, 10)
-    noteText:SetText(entry.note:gsub("b", "♭"))
-    noteText:SetTextColor(0.86, 0.75, 0.48)
-
-    button:SetScript("OnClick", function()
-        Mimorium:PlayInstrumentNote(entry.note, true)
-    end)
-    button:SetScript("OnEnter", function(self)
-        self:SetBackdropColor(0.26, 0.17, 0.40, 1)
-    end)
-    button:SetScript("OnLeave", function(self)
-        self:SetBackdropColor(entry.black and 0.05 or 0.16, entry.black and 0.04 or 0.11, entry.black and 0.09 or 0.20, 1)
-    end)
+local function displayNote(note)
+    return note:gsub("b", "♭")
 end
 
 function Mimorium:EnsureMusicChannel()
@@ -77,91 +45,217 @@ function Mimorium:InitializeInstruments()
     self:CreateInstrumentFrame()
 end
 
+function Mimorium:SetInstrumentKeyActive(note, active)
+    local button = self.instrumentFrame and self.instrumentFrame.keyButtons[note]
+    if not button then
+        return
+    end
+
+    if active then
+        button:SetBackdropColor(0.67, 0.40, 0.90, 1)
+        button:SetBackdropBorderColor(1, 0.88, 0.36, 1)
+    else
+        button:SetBackdropColor(button.isBlack and 0.10 or 0.82, button.isBlack and 0.07 or 0.73, button.isBlack and 0.16 or 0.56, 1)
+        button:SetBackdropBorderColor(0.54, 0.36, 0.12, 1)
+    end
+end
+
+function Mimorium:FlashInstrumentKey(note)
+    self:SetInstrumentKeyActive(note, true)
+    C_Timer.After(0.18, function()
+        if not self.instrumentFrame or not self.instrumentFrame.heldNotes[note] then
+            self:SetInstrumentKeyActive(note, false)
+        end
+    end)
+end
+
+function Mimorium:CreateInstrumentKey(frame, note, keyLabel, isBlack, x)
+    local button = CreateFrame("Button", nil, frame, "BackdropTemplate")
+    button.isBlack = isBlack
+    button:SetSize(isBlack and 34 or 49, isBlack and 155 or 238)
+    button:SetPoint("BOTTOM", frame, "BOTTOM", x, isBlack and 114 or 66)
+    button:SetFrameLevel(frame:GetFrameLevel() + (isBlack and 5 or 2))
+    button:SetBackdrop({
+        bgFile = "Interface\\Buttons\\WHITE8x8",
+        edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+        edgeSize = 10,
+        insets = { left = 2, right = 2, top = 2, bottom = 2 },
+    })
+    button:SetBackdropBorderColor(0.54, 0.36, 0.12, 1)
+    button:SetBackdropColor(isBlack and 0.10 or 0.82, isBlack and 0.07 or 0.73, isBlack and 0.16 or 0.56, 1)
+
+    local noteText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    noteText:SetPoint("BOTTOM", 0, isBlack and 35 or 45)
+    noteText:SetText(displayNote(note))
+    noteText:SetTextColor(isBlack and 0.94 or 0.22, isBlack and 0.83 or 0.13, isBlack and 0.45 or 0.30)
+
+    local keyText = button:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    keyText:SetPoint("BOTTOM", 0, 16)
+    button.keyText = keyText
+    if keyLabel then
+        keyText:SetText(keyLabel)
+        keyText:SetTextColor(isBlack and 1 or 0.27, isBlack and 0.90 or 0.17, isBlack and 0.52 or 0.36)
+    end
+
+    button:SetScript("OnMouseDown", function()
+        frame.heldNotes[note] = true
+        Mimorium:SetInstrumentKeyActive(note, true)
+        Mimorium:PlayInstrumentNote(note, true)
+    end)
+    button:SetScript("OnMouseUp", function()
+        frame.heldNotes[note] = nil
+        Mimorium:SetInstrumentKeyActive(note, false)
+    end)
+
+    frame.keyButtons[note] = button
+end
+
+function Mimorium:RefreshInstrumentKeyboard()
+    local frame = self.instrumentFrame
+    for note, button in pairs(frame.keyButtons) do
+        local name, octave = splitNote(note)
+        local displayKey
+        for key, mapping in pairs(KEY_LAYOUT) do
+            if mapping.name == name and frame.activeOctave + mapping.offset == tonumber(octave) then
+                displayKey = key
+                break
+            end
+        end
+        button.keyText:SetText(displayKey or "")
+        button.keyText:SetTextColor(button.isBlack and 1 or 0.27, button.isBlack and 0.90 or 0.17, button.isBlack and 0.52 or 0.36)
+    end
+    frame.octaveText:SetText("SPIEL-OKTAVE: C" .. frame.activeOctave .. "  ·  ← / →")
+end
+
 function Mimorium:CreateInstrumentFrame()
     local frame = CreateFrame("Frame", "MimoriumInstrumentFrame", UIParent, "BackdropTemplate")
-    frame:SetSize(700, 410)
-    frame:SetPoint("CENTER")
+    frame:SetSize(1260, 585)
+    frame:SetPoint("CENTER", 0, 30)
     frame:SetFrameStrata("DIALOG")
     frame:EnableKeyboard(true)
     frame:EnableMouse(true)
     frame:Hide()
     frame:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
+        bgFile = "Interface\\Buttons\\WHITE8x8",
         edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-        edgeSize = 18,
-        insets = { left = 8, right = 8, top = 8, bottom = 8 },
+        edgeSize = 24,
+        insets = { left = 12, right = 12, top = 12, bottom = 12 },
     })
-    frame:SetBackdropBorderColor(0.75, 0.58, 0.22, 1)
-    frame.pressedKeys = {}
+    frame:SetBackdropColor(0.13, 0.08, 0.19, 0.98)
+    frame:SetBackdropBorderColor(0.80, 0.60, 0.20, 1)
+    frame.keyButtons = {}
+    frame.heldNotes = {}
+    frame.activeOctave = 4
 
-    local crest = frame:CreateTexture(nil, "ARTWORK")
+    local header = frame:CreateTexture(nil, "ARTWORK")
+    header:SetTexture("Interface\\Buttons\\WHITE8x8")
+    header:SetSize(1230, 112)
+    header:SetPoint("TOP", 0, -14)
+    header:SetVertexColor(0.25, 0.15, 0.36, 1)
+
+    local crest = frame:CreateTexture(nil, "OVERLAY")
     crest:SetTexture("Interface\\Icons\\INV_Misc_Gem_Variety_01")
-    crest:SetSize(36, 36)
-    crest:SetPoint("TOP", 0, -26)
+    crest:SetSize(44, 44)
+    crest:SetPoint("TOP", 0, -27)
 
     local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-    title:SetPoint("TOP", crest, "BOTTOM", 0, -5)
+    title:SetPoint("TOP", crest, "BOTTOM", 0, -4)
     title:SetText("MIMORIUM · KRISTALLHARFE")
 
     local subtitle = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    subtitle:SetPoint("TOP", title, "BOTTOM", 0, -7)
-    subtitle:SetText("Spiele frei – jede Note erreicht den Mimorium-Musikkanal")
-
-    local divider = frame:CreateTexture(nil, "ARTWORK")
-    divider:SetTexture("Interface\\Buttons\\WHITE8x8")
-    divider:SetSize(480, 1)
-    divider:SetPoint("TOP", subtitle, "BOTTOM", 0, -10)
-    divider:SetVertexColor(0.74, 0.57, 0.20, 0.8)
-
-    local status = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    status:SetPoint("BOTTOM", 0, 25)
-    frame.statusText = status
+    subtitle:SetPoint("TOP", title, "BOTTOM", 0, -6)
+    subtitle:SetText("Freies Spiel im gemeinsamen Mimorium-Musikkanal")
+    subtitle:SetTextColor(0.94, 0.80, 0.40)
 
     local close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
-    close:SetPoint("TOPRIGHT", -3, -3)
+    close:SetPoint("TOPRIGHT", -7, -7)
 
-    local whiteStart = -189
-    local whiteWidth = 54
-    for _, entry in ipairs(NOTES) do
-        local x = whiteStart + (entry.whiteIndex - 1) * whiteWidth
-        if entry.black then
-            x = x + (whiteWidth / 2)
+    local octave = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    octave:SetPoint("TOPLEFT", 46, -43)
+    frame.octaveText = octave
+
+    local channel = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    channel:SetPoint("TOPRIGHT", -46, -43)
+    channel:SetText("MUSIKKANAL: " .. MUSIC_CHANNEL)
+    channel:SetTextColor(0.94, 0.80, 0.40)
+
+    local whiteWidth = 49
+    local firstWhiteX = -((22 - 1) * whiteWidth) / 2
+    local whiteCount = 0
+    for octaveNumber = 3, 5 do
+        for _, name in ipairs({ "C", "D", "E", "F", "G", "A", "B" }) do
+            whiteCount = whiteCount + 1
+            local note = makeNote(name, octaveNumber)
+            local physicalKey
+            for key, mapping in pairs(KEY_LAYOUT) do
+                if mapping.name == name and mapping.offset == 0 and octaveNumber == frame.activeOctave then
+                    physicalKey = key
+                end
+            end
+            self:CreateInstrumentKey(frame, note, physicalKey, false, firstWhiteX + (whiteCount - 1) * whiteWidth)
         end
-        createKey(frame, entry, x)
+    end
+    whiteCount = whiteCount + 1
+    self:CreateInstrumentKey(frame, "C6", frame.activeOctave == 5 and "K" or nil, false, firstWhiteX + (whiteCount - 1) * whiteWidth)
+
+    local whiteOffset = 0
+    for octaveNumber = 3, 5 do
+        for _, name in ipairs({ "Db", "Eb", "Gb", "Ab", "Bb" }) do
+            local beforeWhite = WHITE_NOTE_INDEX[name:gsub("b", "")] + whiteOffset
+            local note = makeNote(name, octaveNumber)
+            local physicalKey
+            for key, mapping in pairs(KEY_LAYOUT) do
+                if mapping.name == name and octaveNumber == frame.activeOctave then
+                    physicalKey = key
+                end
+            end
+            self:CreateInstrumentKey(frame, note, physicalKey, true, firstWhiteX + (beforeWhite - 1) * whiteWidth + (whiteWidth / 2))
+        end
+        whiteOffset = whiteOffset + 7
     end
 
-    local controls = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    controls:SetPoint("BOTTOM", status, "TOP", 0, 10)
-    controls:SetText("A  W  S  E  D  F  T  G  Y  H  U  J  K     ·     ESC schließen")
-    controls:SetTextColor(0.84, 0.73, 0.43)
+    local controls = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    controls:SetPoint("BOTTOM", 0, 31)
+    controls:SetText("A W S E D F T G Y H U J K  ·  ← / → Oktave wechseln  ·  ESC schließen")
+    controls:SetTextColor(0.97, 0.86, 0.54)
 
     frame:SetScript("OnKeyDown", function(self, key)
         if key == "ESCAPE" then
             self:Hide()
             return
         end
+        if key == "LEFT" or key == "RIGHT" then
+            self.activeOctave = math.max(3, math.min(5, self.activeOctave + (key == "LEFT" and -1 or 1)))
+            Mimorium:RefreshInstrumentKeyboard()
+            return
+        end
 
-        local entry = NOTE_BY_KEY[key]
-        if entry and not self.pressedKeys[key] then
-            self.pressedKeys[key] = true
-            Mimorium:PlayInstrumentNote(entry.note, true)
+        local mapping = KEY_LAYOUT[key]
+        if mapping and not self.pressedKeys[key] then
+            local note = makeNote(mapping.name, self.activeOctave + mapping.offset)
+            self.pressedKeys[key] = note
+            self.heldNotes[note] = true
+            Mimorium:SetInstrumentKeyActive(note, true)
+            Mimorium:PlayInstrumentNote(note, true)
         end
     end)
     frame:SetScript("OnKeyUp", function(self, key)
-        self.pressedKeys[key] = nil
+        local note = self.pressedKeys[key]
+        if note then
+            self.pressedKeys[key] = nil
+            self.heldNotes[note] = nil
+            Mimorium:SetInstrumentKeyActive(note, false)
+        end
     end)
     frame:SetScript("OnShow", function(self)
         self:SetPropagateKeyboardInput(false)
-        wipe(self.pressedKeys)
-        local channelNumber = Mimorium:EnsureMusicChannel()
-        if channelNumber and channelNumber > 0 then
-            self.statusText:SetText("MUSIKKANAL: " .. MUSIC_CHANNEL .. "  ·  AUDIO: SPIELEFFEKTE (SFX)")
-        else
-            self.statusText:SetText("Musikkanal wird verbunden …")
-        end
+        self.pressedKeys = {}
+        Mimorium:RefreshInstrumentKeyboard()
+        Mimorium:EnsureMusicChannel()
     end)
     frame:SetScript("OnHide", function(self)
         wipe(self.pressedKeys)
+        wipe(self.heldNotes)
     end)
 
     self.instrumentFrame = frame
@@ -176,9 +270,7 @@ function Mimorium:ToggleInstrumentFrame()
 end
 
 function Mimorium:PlayInstrumentNote(note, shouldBroadcast)
-    -- SFX is deliberately used: it is the same audio channel as spell effects.
     PlaySoundFile(soundPath(note), "SFX")
-
     if shouldBroadcast then
         local channelNumber = self:EnsureMusicChannel()
         if channelNumber and channelNumber > 0 then
@@ -191,9 +283,9 @@ function Mimorium:HandleAddonMessage(prefix, message, _, sender)
     if prefix ~= PREFIX or Ambiguate(sender, "none") == UnitName("player") then
         return
     end
-
     local note = message:match("^N:([A-G][b#]?%d)$")
     if note then
+        self:FlashInstrumentKey(note)
         self:PlayInstrumentNote(note, false)
     end
 end
