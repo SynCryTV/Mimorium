@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.4
+
+- Instrument-Noten auf dreifache lokale Wiedergabe angehoben, damit sie sich klar gegen Ambient-Sound durchsetzen.
+
 ## 0.3.3
 
 - Instrumente zurück auf SFX gelegt und nur Mimoriums Noten durch doppelte Wiedergabe deutlich verstärkt.
