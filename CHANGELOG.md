@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0
+
+- Konzertklavier als zweites, separat synchronisiertes Testinstrument ergänzt.
+- Harfe und Klavier verwenden getrennte Klangdateien und lassen sich im Mimorium-Hauptfenster auswählen.
+
 ## 0.3.4
 
 - Instrument-Noten auf dreifache lokale Wiedergabe angehoben, damit sie sich klar gegen Ambient-Sound durchsetzen.

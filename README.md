@@ -10,7 +10,8 @@ Nächstes folgen Kategorien, Favoriten und die Emote-Sammlung.
 
 ## Instrumente (Prototyp)
 
-Über **Kristallharfe spielen** öffnet sich das erste spielbare Instrument.
+Über **Kristallharfe spielen** oder **Konzertklavier spielen** öffnet sich ein
+spielbares Instrument.
 Das Overlay zeigt drei Oktaven von C3 bis C6. Die Tasten `A W S E D F T G Y H
 U J K` spielen jeweils die ausgewählte chromatische Oktave; mit den Pfeiltasten
 wechselst du zwischen C3, C4 und C5. Gespielte und empfangene Noten leuchten
