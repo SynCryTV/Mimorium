@@ -1,0 +1,7 @@
+# WoW client-generated files
+*.log
+
+# Local editor configuration
+.vscode/
+.idea/
+

@@ -1,0 +1,3 @@
+# Keep Lua and metadata files consistent across Windows and release builds.
+* text=auto
+
