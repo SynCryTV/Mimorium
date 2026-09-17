@@ -26,10 +26,6 @@ local function soundPath(note)
     return "Interface\\AddOns\\Mimorium\\Sounds\\Harp_" .. note .. ".ogg"
 end
 
-local function displayNote(note)
-    return note:gsub("b", "♭")
-end
-
 function Mimorium:EnsureMusicChannel()
     local channelNumber = GetChannelName(MUSIC_CHANNEL)
     if channelNumber == 0 then
@@ -86,7 +82,7 @@ function Mimorium:CreateInstrumentKey(frame, note, keyLabel, isBlack, x)
 
     local noteText = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     noteText:SetPoint("BOTTOM", 0, isBlack and 35 or 45)
-    noteText:SetText(displayNote(note))
+    noteText:SetText(note)
     noteText:SetTextColor(isBlack and 0.94 or 0.22, isBlack and 0.83 or 0.13, isBlack and 0.45 or 0.30)
 
     local keyText = button:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -124,7 +120,7 @@ function Mimorium:RefreshInstrumentKeyboard()
         button.keyText:SetText(displayKey or "")
         button.keyText:SetTextColor(button.isBlack and 1 or 0.27, button.isBlack and 0.90 or 0.17, button.isBlack and 0.52 or 0.36)
     end
-    frame.octaveText:SetText("SPIEL-OKTAVE: C" .. frame.activeOctave .. "  ·  ← / →")
+    frame.octaveText:SetText("SPIEL-OKTAVE: C" .. frame.activeOctave .. " - LINKS/RECHTS")
 end
 
 function Mimorium:CreateInstrumentFrame()
@@ -160,7 +156,7 @@ function Mimorium:CreateInstrumentFrame()
 
     local title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
     title:SetPoint("TOP", crest, "BOTTOM", 0, -4)
-    title:SetText("MIMORIUM · KRISTALLHARFE")
+    title:SetText("MIMORIUM - KRISTALLHARFE")
 
     local subtitle = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     subtitle:SetPoint("TOP", title, "BOTTOM", 0, -6)
@@ -216,7 +212,7 @@ function Mimorium:CreateInstrumentFrame()
 
     local controls = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     controls:SetPoint("BOTTOM", 0, 31)
-    controls:SetText("A W S E D F T G Y H U J K  ·  ← / → Oktave wechseln  ·  ESC schließen")
+    controls:SetText("A W S E D F T G Y H U J K - LINKS/RECHTS: Oktave wechseln - ESC schliessen")
     controls:SetTextColor(0.97, 0.86, 0.54)
 
     frame:SetScript("OnKeyDown", function(self, key)

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.2
+
+- Nicht unterstützte Unicode-Zeichen im Piano-Overlay durch WoW-sichere ASCII-Beschriftungen ersetzt.
+
 ## 0.3.1
 
 - Instrumente auf den WoW-Master-Audiokanal umgestellt, damit sie nicht vom SFX-Regler gedämpft werden.
