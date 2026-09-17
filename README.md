@@ -5,7 +5,8 @@ Ein leichtes WoW-Addon für Emotes, Gesten und kleine Rollenspiel-Momente.
 ## Aktueller Stand
 
 Die technische Basis steht. Das Addon lässt sich mit `/mimorium` oder `/mimo`
-öffnen; als Nächstes folgen Kategorien, Favoriten und die Emote-Sammlung.
+öffnen. Der standardmäßig sichtbare Minimap-Button öffnet es ebenfalls. Als
+Nächstes folgen Kategorien, Favoriten und die Emote-Sammlung.
 
 ## Installation
 

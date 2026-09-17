@@ -17,10 +17,10 @@ end)
 
 function Mimorium:Initialize()
     self:CreateMainFrame()
+    self:CreateMinimapButton()
     self:RegisterSlashCommands()
 end
 
 function Mimorium:Print(message)
     DEFAULT_CHAT_FRAME:AddMessage("|cffc084fcMimorium|r: " .. message)
 end
-
