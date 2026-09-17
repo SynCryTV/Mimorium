@@ -5,7 +5,14 @@ Mimorium.version = C_AddOns.GetAddOnMetadata(addonName, "Version") or "dev"
 
 local eventFrame = CreateFrame("Frame")
 eventFrame:RegisterEvent("ADDON_LOADED")
-eventFrame:SetScript("OnEvent", function(_, _, loadedAddon)
+eventFrame:RegisterEvent("CHAT_MSG_ADDON")
+eventFrame:SetScript("OnEvent", function(_, event, ...)
+    if event == "CHAT_MSG_ADDON" then
+        Mimorium:HandleAddonMessage(...)
+        return
+    end
+
+    local loadedAddon = ...
     if loadedAddon ~= addonName then
         return
     end
@@ -18,6 +25,7 @@ end)
 function Mimorium:Initialize()
     self:CreateMainFrame()
     self:CreateMinimapButton()
+    self:InitializeInstruments()
     self:RegisterSlashCommands()
 end
 

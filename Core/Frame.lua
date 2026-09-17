@@ -26,7 +26,15 @@ function Mimorium:CreateMainFrame()
     description:SetPoint("TOP", title, "BOTTOM", 0, -16)
     description:SetWidth(330)
     description:SetJustifyH("CENTER")
-    description:SetText("Dein Buch für Emotes und Gesten. Die erste Sammlung entsteht gerade.")
+    description:SetText("Dein Buch für Emotes, Gesten und kleine Darbietungen.")
+
+    local instrumentButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    instrumentButton:SetSize(190, 28)
+    instrumentButton:SetPoint("TOP", description, "BOTTOM", 0, -24)
+    instrumentButton:SetText("Kristallharfe spielen")
+    instrumentButton:SetScript("OnClick", function()
+        Mimorium:ToggleInstrumentFrame()
+    end)
 
     local closeButton = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
     closeButton:SetPoint("TOPRIGHT", -4, -4)
@@ -41,4 +49,3 @@ function Mimorium:ToggleFrame()
         self.frame:Show()
     end
 end
-
