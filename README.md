@@ -12,9 +12,11 @@ Nächstes folgen Kategorien, Favoriten und die Emote-Sammlung.
 
 Über **Kristallharfe spielen** öffnet sich das erste spielbare Instrument.
 Die Tasten `A W S E D F T G Y H U J K` bilden eine chromatische Oktave. In
-einer Party, einem Raid oder einer Instanzgruppe werden die Noten an andere
-Spieler mit Mimorium synchronisiert. Die aktuell enthaltenen Töne sind
-neutrale Testklänge und werden später durch Instrument-Samples ersetzt.
+dem automatisch betretenen Kanal `MimoriumMusic` werden die Noten an alle
+anderen Mimorium-Nutzer synchronisiert – ohne Party oder Raid. Die Töne laufen
+über den SFX-Kanal, also dieselbe Lautstärkeregelung wie Zauber- und
+Skill-Effekte. Die aktuell enthaltenen Töne sind neutrale Testklänge und werden
+später durch Instrument-Samples ersetzt.
 
 ## Installation
 

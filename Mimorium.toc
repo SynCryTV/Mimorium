@@ -2,7 +2,7 @@
 ## Title: Mimorium
 ## Notes: Deine Sammlung für WoW-Emotes, Gesten und kleine Rollenspiel-Momente.
 ## Author: SynCryTV
-## Version: 0.2.0
+## Version: 0.2.1
 ## SavedVariables: MimoriumDB
 ## SavedVariablesPerCharacter: MimoriumCharDB
 

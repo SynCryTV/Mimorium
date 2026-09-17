@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1
+
+- Gemeinsamen `MimoriumMusic`-Kanal ergänzt: Instrumente funktionieren jetzt ohne Party oder Raid.
+- Das Instrumentfenster als WoW-inspiriertes Piano-Overlay überarbeitet.
+- Wiedergabe bleibt auf dem SFX-Kanal, also dem Kanal der Zauber- und Skill-Effekte.
+- Lautstärke der Testtöne erhöht.
+
 ## 0.2.0
 
 - Erster spielbarer Instrumenten-Prototyp: Kristallharfe mit einer chromatischen Oktave.
