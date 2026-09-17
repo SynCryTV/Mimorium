@@ -1,0 +1,56 @@
+name: Auto Release
+
+# Läuft bei jedem Push auf main/master. Die Versionsnummer wird direkt aus
+# Mimorium.toc gelesen. GitHub erstellt bzw. aktualisiert dazu einen Release
+# mit einer ZIP, die den Addon-Ordner Mimorium enthält – genau dieses Format
+# erwartet WowUp.
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Version aus TOC lesen
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(sed -n 's/^## Version:[[:space:]]*//p' Mimorium.toc | head -n 1 | tr -d '\r' | xargs)
+          test -n "$VERSION"
+          echo "Gefundene Version: $VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Addon für WowUp zippen
+        shell: bash
+        run: |
+          mkdir -p build/Mimorium
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='build' \
+            ./ build/Mimorium/
+          cd build
+          zip -r "Mimorium-v${{ steps.version.outputs.version }}.zip" Mimorium
+
+      - name: Release erstellen oder aktualisieren
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          files: build/Mimorium-v${{ steps.version.outputs.version }}.zip
+          body_path: CHANGELOG.md
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
